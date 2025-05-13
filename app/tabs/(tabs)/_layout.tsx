@@ -7,7 +7,7 @@ import SettingsIcon from "@/assets/Icons/gear-six.svg";
 import Plus from "@/assets/Icons/plus.svg";
 import { SvgProps } from "react-native-svg";
 import { View, TouchableOpacity, Platform, Alert } from "react-native";
-import { router, Tabs } from "expo-router";
+import { router, Stack, Tabs } from "expo-router";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader } from "@/components/ui/modal";
 import { Heading } from "@/components/ui/heading";
@@ -73,7 +73,42 @@ const TabButton = ({ iconName, isFocused, onPress, isMain = false }: TabButtonPr
   );
 };
 
-export default function TabLayout() {
+export default function StackLayout () {
+
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: useClientOnlyValue(false, true),
+        headerTitleStyle: {
+          fontFamily: "Bold",
+          fontSize: 23
+        },
+        headerStyle: {
+          backgroundColor: "#000000"
+        },
+        headerRight: ()=> <Pressable onPress={()=> router.navigate("/tabs/settings")} className="p-4">
+          <SettingsIcon width={24} height={24} color={"#ffffff"} />
+        </Pressable>,
+      }}
+    >
+      <Stack.Screen
+        name="index"
+        options={{
+          title: "Spend",
+          headerTitleAlign: "left",
+        }}
+      />
+      <Stack.Screen
+        name="add"
+        options={{
+          title: "Add",
+        }}
+      />
+    </Stack>
+  );
+}
+
+function TabLayout() {
   const { initialized, categories, addExpenditure } = useDb();
   
   const [showModal, setShowModal] = useState(false);
