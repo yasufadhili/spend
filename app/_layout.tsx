@@ -12,6 +12,7 @@ import { useColorScheme } from "@/components/useColorScheme";
 import { Slot } from "expo-router";
 
 import "../global.css";
+import { DbProvider } from "@/db/context";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -64,7 +65,9 @@ function RootLayoutNav() {
   return (
     <GluestackUIProvider mode={colorScheme === "dark" ? "dark" : "light"}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <DbProvider>
         <Slot />
+      </DbProvider>
       </ThemeProvider>
     </GluestackUIProvider>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Home from "@/assets/Icons/house-simple.svg";
 import HomeFill from "@/assets/Icons/house-simple-fill.svg";
 import Chart from "@/assets/Icons/chart-bar.svg";
@@ -6,23 +6,22 @@ import ChartFill from "@/assets/Icons/chart-bar-fill.svg";
 import SettingsIcon from "@/assets/Icons/gear-six.svg";
 import Plus from "@/assets/Icons/plus.svg";
 import { SvgProps } from "react-native-svg";
-import { View, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
+import { View, TouchableOpacity, Platform, Alert } from "react-native";
 import { router, Tabs } from "expo-router";
-import { useColorScheme } from "react-native";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader } from "@/components/ui/modal";
 import { Heading } from "@/components/ui/heading";
 import { CloseIcon, Icon } from "@/components/ui/icon";
 import { Button, ButtonText } from "@/components/ui/button";
-import { FormControl, FormControlLabel, FormControlLabelText } from "@/components/ui/form-control";
+import { FormControl, FormControlLabel, FormControlLabelText, FormControlHelper, FormControlHelperText, FormControlError, FormControlErrorText } from "@/components/ui/form-control";
 import { Input, InputField } from "@/components/ui/input";
 import { Textarea, TextareaInput } from "@/components/ui/textarea";
 import { Pressable } from "@/components/ui/pressable";
-
-/**
- * TODO
- * Improve the screen are as to scroll when the keyboard is opened in the modal, but without lighting the bottom tab
- */
+import { Select, SelectTrigger, SelectInput, SelectIcon, SelectPortal, SelectBackdrop, SelectContent, SelectDragIndicatorWrapper, SelectDragIndicator, SelectItem } from "@/components/ui/select";
+import { ChevronDownIcon } from "@/components/ui/icon";
+import { useDb } from "@/db/context";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Text } from "@/components/ui/text";
 
 type TabIconProps = {
   name: "home" | "chart" | "plus";
@@ -75,19 +74,83 @@ const TabButton = ({ iconName, isFocused, onPress, isMain = false }: TabButtonPr
 };
 
 export default function TabLayout() {
+  const { initialized, categories, addExpenditure } = useDb();
+  
   const [showModal, setShowModal] = useState(false);
+  const [title, setTitle] = useState("");
+  const [amount, setAmount] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [note, setNote] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  
+  const [isTitleInvalid, setIsTitleInvalid] = useState(false);
+  const [isAmountInvalid, setIsAmountInvalid] = useState(false);
+  const [isCategoryInvalid, setIsCategoryInvalid] = useState(false);
 
-  const [isInvalid, setIsInvalid] = React.useState(false)
-  const [inputValue, setInputValue] = React.useState("")
-  const [amountValue, setAmountValue] = React.useState("")
-  const [noteValue, setNoteValue] = React.useState("")
-  const handleAddItem = () => {
-    if (inputValue.length < 6) {
-      setIsInvalid(true)
-    } else {
-      setIsInvalid(false)
+  const resetForm = () => {
+    setTitle("");
+    setAmount("");
+    setCategoryId("");
+    setNote("");
+    setDate(new Date());
+    setIsTitleInvalid(false);
+    setIsAmountInvalid(false);
+    setIsCategoryInvalid(false);
+  };
+
+  const handleSave = async () => {
+    // Validate inputs
+    let isValid = true;
+    
+    if (!title.trim()) {
+      setIsTitleInvalid(true);
+      isValid = false;
     }
-  }
+    
+    if (!amount.trim() || isNaN(Number(amount)) || Number(amount) <= 0) {
+      setIsAmountInvalid(true);
+      isValid = false;
+    }
+    
+    if (!categoryId) {
+      setIsCategoryInvalid(true);
+      isValid = false;
+    }
+    
+    if (!isValid) return;
+    
+    try {
+      if (!initialized) {
+        Alert.alert("Error", "Database is not initialized yet. Please try again later.");
+        return;
+      }
+      
+      await addExpenditure(
+        title.trim(),
+        Number(amount),
+        categoryId,
+        date.getTime(),
+        note.trim() || undefined
+      );
+      
+      setShowModal(false);
+      resetForm();
+      
+      // Optional: Show success message
+      Alert.alert("Success", "Expenditure added successfully");
+    } catch (error) {
+      console.error("Failed to add expenditure:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      Alert.alert("Error", `Failed to add expenditure: ${errorMessage}`);
+    }
+  };
+
+  const onChangeDate = (event: any, selectedDate?: Date) => {
+    const currentDate = selectedDate || date;
+    setShowDatePicker(Platform.OS === 'ios');
+    setDate(currentDate);
+  };
 
   return (
     <>
@@ -122,7 +185,11 @@ export default function TabLayout() {
 
               const onPress = () => {
                 if (route.name === "add") {
-                  setShowModal(true);
+                  if (initialized) {
+                    setShowModal(true);
+                  } else {
+                    Alert.alert("Loading", "Database is still initializing. Please try again in a moment.");
+                  }
                   return;
                 }
 
@@ -164,13 +231,18 @@ export default function TabLayout() {
         <Tabs.Screen name="insights" options={{ title: "Insights" }} />
       </Tabs>
 
-      <Modal size="md" isOpen={showModal} onClose={() => setShowModal(false)}>
+      <Modal size="md" isOpen={showModal} onClose={() => {
+        setShowModal(false);
+        resetForm();
+      }}>
         <ModalBackdrop />
         <ModalContent>
-
           <ModalHeader>
             <Heading size="lg">Add New Expenditure</Heading>
-            <ModalCloseButton>
+            <ModalCloseButton onPress={() => {
+              setShowModal(false);
+              resetForm();
+            }}>
               <Icon
                 as={CloseIcon}
                 size="md"
@@ -180,24 +252,37 @@ export default function TabLayout() {
           </ModalHeader>
           <ModalBody className="pt-4 pb-4">
             <FormControl
-              isInvalid={isInvalid}
+              isInvalid={isTitleInvalid}
               size="md"
-              isDisabled={false}
-              isReadOnly={false}
-              isRequired={false}
-              className="gap-1"
+              isRequired={true}
+              className="gap-1 mb-3"
             >
               <FormControlLabel>
-                <FormControlLabelText>Item</FormControlLabelText>
+                <FormControlLabelText>Title</FormControlLabelText>
               </FormControlLabel>
               <Input className="my-1" size={"md"}>
                 <InputField
                   type="text"
-                  value={inputValue}
-                  onChangeText={(text) => setInputValue(text)}
+                  value={title}
+                  onChangeText={(text) => {
+                    setTitle(text);
+                    setIsTitleInvalid(false);
+                  }}
                 />
               </Input>
+              {isTitleInvalid && (
+                <FormControlError>
+                  <FormControlErrorText>Title is required</FormControlErrorText>
+                </FormControlError>
+              )}
+            </FormControl>
 
+            <FormControl
+              isInvalid={isAmountInvalid}
+              size="md"
+              isRequired={true}
+              className="gap-1 mb-3"
+            >
               <FormControlLabel>
                 <FormControlLabelText>Amount</FormControlLabelText>
               </FormControlLabel>
@@ -205,11 +290,89 @@ export default function TabLayout() {
                 <InputField
                   type="text"
                   keyboardType="numeric"
-                  value={amountValue}
-                  onChangeText={(text) => setAmountValue(text)}
+                  value={amount}
+                  onChangeText={(text) => {
+                    setAmount(text);
+                    setIsAmountInvalid(false);
+                  }}
                 />
               </Input>
+              {isAmountInvalid && (
+                <FormControlError>
+                  <FormControlErrorText>Enter a valid amount</FormControlErrorText>
+                </FormControlError>
+              )}
+            </FormControl>
 
+            <FormControl
+              isInvalid={isCategoryInvalid}
+              size="md"
+              isRequired={true}
+              className="gap-1 mb-3"
+            >
+              <FormControlLabel>
+                <FormControlLabelText>Category</FormControlLabelText>
+              </FormControlLabel>
+              <Select
+                onValueChange={(value) => {
+                  setCategoryId(value);
+                  setIsCategoryInvalid(false);
+                }}
+                selectedValue={categoryId}
+              >
+                <SelectTrigger className="my-1" size={"md"}>
+                  <SelectInput placeholder="Select a category" />
+                  <SelectIcon>
+                    <Icon as={ChevronDownIcon} />
+                  </SelectIcon>
+                </SelectTrigger>
+                <SelectPortal>
+                  <SelectBackdrop />
+                  <SelectContent>
+                    <SelectDragIndicatorWrapper>
+                      <SelectDragIndicator />
+                    </SelectDragIndicatorWrapper>
+                    {categories.map(category => (
+                      <SelectItem 
+                        key={category.id} 
+                        label={category.name} 
+                        value={category.id} 
+                      />
+                    ))}
+                  </SelectContent>
+                </SelectPortal>
+              </Select>
+              {isCategoryInvalid && (
+                <FormControlError>
+                  <FormControlErrorText>Select a category</FormControlErrorText>
+                </FormControlError>
+              )}
+            </FormControl>
+
+            <FormControl
+              size="md"
+              className="gap-1 mb-3"
+            >
+              <FormControlLabel>
+                <FormControlLabelText>Date</FormControlLabelText>
+              </FormControlLabel>
+              <Pressable onPress={() => setShowDatePicker(true)} className="border border-gray-400 rounded-md p-3 my-1">
+                <Text>{date.toLocaleDateString()}</Text>
+              </Pressable>
+              {showDatePicker && (
+                <DateTimePicker
+                  value={date}
+                  mode="date"
+                  display="default"
+                  onChange={onChangeDate}
+                />
+              )}
+            </FormControl>
+
+            <FormControl
+              size="md"
+              className="gap-1"
+            >
               <FormControlLabel>
                 <FormControlLabelText>Note</FormControlLabelText>
               </FormControlLabel>
@@ -217,37 +380,34 @@ export default function TabLayout() {
                 <TextareaInput
                   multiline
                   type="text"
-                  value={noteValue}
-                  onChangeText={(text) => setNoteValue(text)}
+                  value={note}
+                  onChangeText={(text) => setNote(text)}
                 />
               </Textarea>
-
             </FormControl>
           </ModalBody>
           <ModalFooter>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  action="secondary"
-                  className="mr-3"
-                  onPress={() => setShowModal(false)}
-                >
-                  <ButtonText>Cancel</ButtonText>
-                </Button>
-                <Button
-                  size="sm"
-                  action="primary"
-                  className="border-0"
-                  onPress={() => {
-                    // Handle form submission
-                    setShowModal(false);
-                  }}
-                >
+            <Button
+              variant="outline"
+              size="sm"
+              action="secondary"
+              className="mr-3"
+              onPress={() => {
+                setShowModal(false);
+                resetForm();
+              }}
+            >
+              <ButtonText>Cancel</ButtonText>
+            </Button>
+            <Button
+              size="sm"
+              action="primary"
+              className="border-0"
+              onPress={handleSave}
+            >
               <ButtonText>Save</ButtonText>
             </Button>
           </ModalFooter>
-
-
         </ModalContent>
       </Modal>
     </>
