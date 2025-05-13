@@ -190,8 +190,24 @@ const DailyTab = () => {
     </Box>
   );
 
+  function randomNumber() {
+    return Math.floor(Math.random() * 26) + 125;
+  }
+  function generateRandomColor(): string {
+    // Generating a random number between 0 and 0xFFFFFF
+    const randomColor = Math.floor(Math.random() * 0xffffff);
+    // Converting the number to a hexadecimal string and padding with zeros
+    return `#${randomColor.toString(16).padStart(6, "0")}`;
+  }
+  const DATA = (numberPoints = 5) =>
+    Array.from({ length: numberPoints }, (_, index) => ({
+      value: randomNumber(),
+      color: generateRandomColor(),
+      label: `Label ${index + 1}`,
+    }));
+
   const ListHeader = () => (
-    <Box className="pb-4 px-4">
+    <Box className="pb-4 pt-8 px-4">
       <Text className="text-xl font-bold mb-4">Today's Summary</Text>
       
       {loading && !refreshing ? (
@@ -208,37 +224,7 @@ const DailyTab = () => {
           {chartData.length > 0 ? (
             <Box className="flex-row justify-between items-center mb-4">
               <Box className="w-[50%] h-[200px] justify-center items-center">
-                <Pie.Chart
-                  data={chartData}
-                  x="x"
-                  y="y"
-                  width={180}
-                  height={180}
-                  padding={0}
-                  innerRadius={30}
-                  labelRadius={60}
-                  colorScale={chartData.map(item => getCategoryColor(item.categoryId))}
-                  style={{
-                    labels: {
-                      fontSize: 10,
-                      fill: 'white'
-                    }
-                  }}
-                  events={[{
-                    target: "data",
-                    eventHandlers: {
-                      onPress: () => {
-                        return [{
-                          target: "data",
-                          mutation: (props) => {
-                            handleSlicePress(props.datum.categoryId);
-                            return null;
-                          }
-                        }];
-                      }
-                    }
-                  }]}
-                />
+                
               </Box>
               <Box className="w-[50%] pl-2">
                 {legendData.map((item, index) => (
