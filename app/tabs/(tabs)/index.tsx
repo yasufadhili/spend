@@ -19,7 +19,6 @@ export default function HomeScreen() {
   );
 }
 
-// Define category colours
 const categoryColours: Record<string, string> = {
   // Default colours, will be overridden by actual category colors from DB
   default: '#9966FF',
@@ -107,18 +106,15 @@ const DailyTab = () => {
     }
   }, [initialized, selectedDate, categories, getDailyExpenditures]);
 
-  // Handle pull-to-refresh
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     loadExpenditures();
   }, [loadExpenditures]);
   
-  // Load data initially and when dependencies change
   useEffect(() => {
     loadExpenditures();
   }, [loadExpenditures, refreshTrigger]);
 
-  // Update category colours based on database
   useEffect(() => {
     categories.forEach(category => {
       categoryColours[category.id] = category.color;
@@ -148,7 +144,6 @@ const DailyTab = () => {
     });
   }, [expenditures, total, categories]);
 
-  // Legend data
   const legendData = useMemo(() => {
     return chartData.map(({ x, y, categoryId }) => ({
       name: `${x}: UGX ${y.toFixed(2)}`,
@@ -161,18 +156,15 @@ const DailyTab = () => {
     return category?.color || categoryColours.default;
   }
 
-  // Handle pie slice selection
   const handleSlicePress = (categoryId: string) => {
     setSelectedCategory(selectedCategory === categoryId ? null : categoryId);
   };
 
-  // Filter expenditures based on selected category
   const filteredExpenditures = useMemo(() => {
     if (!selectedCategory) return expenditures;
     return expenditures.filter(item => item.categoryId === selectedCategory);
   }, [expenditures, selectedCategory]);
 
-  // Format time from timestamp
   const formatTime = (timestamp: number) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -285,7 +277,6 @@ const WeeklyTab = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  // Load expenditures from database
   useEffect(() => {
     if (!initialized) return;
 
@@ -323,7 +314,6 @@ const WeeklyTab = () => {
     loadExpenditures();
   }, [initialized, categories]);
 
-  // Similar rendering logic as DailyTab, but with weekly data
   return loading ? (
     <Box className="flex-1 items-center justify-center">
       <ActivityIndicator size="large" color="#0000ff" />
@@ -335,7 +325,7 @@ const WeeklyTab = () => {
           ? "No expenditures this week" 
           : `Weekly Total: UGX ${expenditures.reduce((sum, e) => sum + e.amount, 0).toFixed(2)}`}
       </Text>
-      {/* Implementation of weekly summary similar to daily tab */}
+      {/* TODO Implementation of weekly summary similar to daily tab */}
     </Box>
   );
 };
@@ -347,7 +337,6 @@ const MonthlyTab = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  // Load expenditures from database
   useEffect(() => {
     if (!initialized) return;
 
@@ -357,7 +346,6 @@ const MonthlyTab = () => {
         const today = new Date();
         const monthlyExpenses = await getMonthlyExpenditures(today);
         
-        // Map category objects to expenditures
         const expensesWithCategories = monthlyExpenses.map(expense => {
           const category = categories.find(c => c.id === expense.categoryId);
           return {
@@ -389,7 +377,7 @@ const MonthlyTab = () => {
           ? "No expenditures this month" 
           : `Monthly Total: UGX ${expenditures.reduce((sum, e) => sum + e.amount, 0).toFixed(2)}`}
       </Text>
-      {/* Implementation of monthly summary similar to daily tab */}
+      {/* TODO Implementation of monthly summary similar to daily tab */}
     </Box>
   );
 };

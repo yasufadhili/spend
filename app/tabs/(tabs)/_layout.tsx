@@ -137,7 +137,7 @@ export default function TabLayout() {
       setShowModal(false);
       resetForm();
       
-      // Optional: Show success message
+      // Success message
       Alert.alert("Success", "Expenditure added successfully");
     } catch (error) {
       console.error("Failed to add expenditure:", error);
