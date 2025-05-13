@@ -4,6 +4,15 @@
 
 Spend is a lightweight, privacy-focused personal finance app I designed to provide a clear, simple view of my daily spending habits. Spend is backed by local SQLite storage, and offers fast performance with zero dependency on the cloud – all data stays on the device.
 
+## Screenshots
+
+<div style="display: flex; gap: 10px;">
+<img src="./assets/screenshots/1.jpg" alt="Screenshot1" width="240" />
+
+<img src="./assets/screenshots/2.jpg" alt="Screenshot2" width="240" />
+
+</div>
+
 ## Core Features
 
 - **1. Add and manage expenses**
@@ -31,8 +40,5 @@ Spend is a lightweight, privacy-focused personal finance app I designed to provi
 
 ## Privacy and Simplicity first
 
-Spend respects data and time. There’s no signup, no ads, and no hidden tracking – just install and start tracking. Perfect for guys who value privacy, speed, and simplicity in personal finance tools.
+Spend respects data and time. There's no signup, no ads, and no hidden tracking – just install and start tracking. Perfect for guys who value privacy, speed, and simplicity in personal finance tools.
 
-## Download
-
-Downdload the Android APK [here]()
