@@ -12,8 +12,21 @@ import { Stack } from "expo-router";
 
 export default function AppLayout() {
   return (
-    <Stack>
+    <Stack
+     screenOptions={{
+      headerTitleStyle: {
+        fontFamily: "Bold",
+        fontSize: 23
+      },
+      headerStyle: {
+        backgroundColor: "#000000"
+      },
+     }}
+    >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="settings" options={{
+        title: "Preferences"
+      }} />
     </Stack>
   );
 }

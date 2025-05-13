@@ -170,10 +170,14 @@ module.exports = {
         },
       },
       fontFamily: {
-        heading: undefined,
-        body: undefined,
-        mono: undefined,
-        roboto: ["Roboto", "sans-serif"],
+        heading: ["Bold", "sans-serif"],
+        body: ["Regular", "sans-serif"],
+        mono: ["Regular", "monospace"],
+        bold: ["Bold", "sans-serif"],
+        semibold: ["SemiBold", "sans-serif"],
+        medium: ["Medium", "sans-serif"],
+        regular: ["Regular", "sans-serif"],
+        light: ["Light", "sans-serif"],
       },
       fontWeight: {
         extrablack: "950",

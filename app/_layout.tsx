@@ -20,7 +20,7 @@ export {
 
 // export const unstable_settings = {
 //   // Ensure that reloading on `/modal` keeps a back button present.
-//   initialRouteName: "gluestack",
+//   initialRouteName: "",
 // };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -28,8 +28,11 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-    ...FontAwesome.font,
+    'Bold': require("@/assets/fonts/SpaceGrotesk-Bold.ttf"),
+    'SemiBold': require("@/assets/fonts/SpaceGrotesk-SemiBold.ttf"),
+    'Medium': require("@/assets/fonts/SpaceGrotesk-Medium.ttf"),
+    'Regular': require("@/assets/fonts/SpaceGrotesk-Regular.ttf"),
+    'Light': require("@/assets/fonts/SpaceGrotesk-Light.ttf"),
   });
 
   const [styleLoaded, setStyleLoaded] = useState(false);

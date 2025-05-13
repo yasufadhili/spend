@@ -3,11 +3,11 @@ import Home from "@/assets/Icons/house-simple.svg";
 import HomeFill from "@/assets/Icons/house-simple-fill.svg";
 import Chart from "@/assets/Icons/chart-bar.svg";
 import ChartFill from "@/assets/Icons/chart-bar-fill.svg";
-import X from "@/assets/Icons/x.svg";
+import SettingsIcon from "@/assets/Icons/gear-six.svg";
 import Plus from "@/assets/Icons/plus.svg";
 import { SvgProps } from "react-native-svg";
 import { View, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import { useColorScheme } from "react-native";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 import { Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader } from "@/components/ui/modal";
@@ -17,6 +17,7 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { FormControl, FormControlLabel, FormControlLabelText } from "@/components/ui/form-control";
 import { Input, InputField } from "@/components/ui/input";
 import { Textarea, TextareaInput } from "@/components/ui/textarea";
+import { Pressable } from "@/components/ui/pressable";
 
 /**
  * TODO
@@ -80,7 +81,7 @@ export default function TabLayout() {
   const [inputValue, setInputValue] = React.useState("")
   const [amountValue, setAmountValue] = React.useState("")
   const [noteValue, setNoteValue] = React.useState("")
-  const handleSubmit = () => {
+  const handleAddItem = () => {
     if (inputValue.length < 6) {
       setIsInvalid(true)
     } else {
@@ -93,14 +94,19 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           headerShown: useClientOnlyValue(false, true),
+          headerTitleStyle: {
+            fontFamily: "Bold",
+            fontSize: 23
+          },
+          headerStyle: {
+            backgroundColor: "#000000"
+          },
+          headerRight: ()=> <Pressable onPress={()=> router.navigate("/tabs/settings")} className="p-4">
+            <SettingsIcon width={24} height={24} color={"#ffffff"} />
+          </Pressable>,
           tabBarStyle: {
-            position: "absolute",
-            bottom: 20,
-            left: 20,
-            right: 20,
             backgroundColor: "#1F2937",
             borderRadius: 15,
-            height: 70,
             borderTopWidth: 0,
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 4 },
@@ -153,8 +159,8 @@ export default function TabLayout() {
           </View>
         )}
       >
-        <Tabs.Screen name="index" options={{ title: "Home", headerTitleAlign: "left" }} />
-        <Tabs.Screen name="add" options={{ title: "Add Transaction" }} />
+        <Tabs.Screen name="index" options={{ title: "Spend", headerTitleAlign: "left" }} />
+        <Tabs.Screen name="add" options={{ title: "Add" }} />
         <Tabs.Screen name="insights" options={{ title: "Insights" }} />
       </Tabs>
 
