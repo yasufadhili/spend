@@ -74,41 +74,6 @@ const TabButton = ({ iconName, isFocused, onPress, isMain = false }: TabButtonPr
 };
 
 export default function StackLayout () {
-
-  return (
-    <Stack
-      screenOptions={{
-        headerShown: useClientOnlyValue(false, true),
-        headerTitleStyle: {
-          fontFamily: "Bold",
-          fontSize: 23
-        },
-        headerStyle: {
-          backgroundColor: "#000000"
-        },
-        headerRight: ()=> <Pressable onPress={()=> router.navigate("/tabs/settings")} className="p-4">
-          <SettingsIcon width={24} height={24} color={"#ffffff"} />
-        </Pressable>,
-      }}
-    >
-      <Stack.Screen
-        name="index"
-        options={{
-          title: "Spend",
-          headerTitleAlign: "left",
-        }}
-      />
-      <Stack.Screen
-        name="add"
-        options={{
-          title: "Add",
-        }}
-      />
-    </Stack>
-  );
-}
-
-function TabLayout() {
   const { initialized, categories, addExpenditure } = useDb();
   
   const [showModal, setShowModal] = useState(false);
@@ -189,7 +154,7 @@ function TabLayout() {
 
   return (
     <>
-      <Tabs
+      <Stack
         screenOptions={{
           headerShown: useClientOnlyValue(false, true),
           headerTitleStyle: {
@@ -202,69 +167,29 @@ function TabLayout() {
           headerRight: ()=> <Pressable onPress={()=> router.navigate("/tabs/settings")} className="p-4">
             <SettingsIcon width={24} height={24} color={"#ffffff"} />
           </Pressable>,
-          tabBarStyle: {
-            backgroundColor: "#1F2937",
-            borderRadius: 15,
-            borderTopWidth: 0,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.5,
-          },
-          tabBarShowLabel: false,
         }}
-        tabBar={({ navigation, state }) => (
-          <View className="flex-row justify-around items-center absolute bottom-5 left-5 right-5 bg-gray-900 rounded-2xl h-16 px-2 shadow-md">
-            {state.routes.map((route, index) => {
-              const isFocused = state.index === index;
-
-              const onPress = () => {
-                if (route.name === "add") {
-                  if (initialized) {
-                    setShowModal(true);
-                  } else {
-                    Alert.alert("Loading", "Database is still initializing. Please try again in a moment.");
-                  }
-                  return;
-                }
-
-                const event = navigation.emit({
-                  type: "tabPress",
-                  target: route.key,
-                  canPreventDefault: true,
-                });
-
-                if (!isFocused && !event.defaultPrevented) {
-                  navigation.navigate(route.name);
-                }
-              };
-
-              const tabMap = {
-                index: "home",
-                insights: "chart",
-                add: "plus",
-              } as const;
-
-              const iconName = tabMap[route.name as keyof typeof tabMap] || "home";
-              const isMain = route.name === "add";
-
-              return (
-                <TabButton
-                  key={index}
-                  iconName={iconName}
-                  isFocused={isFocused}
-                  onPress={onPress}
-                  isMain={isMain}
-                />
-              );
-            })}
-          </View>
-        )}
       >
-        <Tabs.Screen name="index" options={{ title: "Spend", headerTitleAlign: "left" }} />
-        <Tabs.Screen name="add" options={{ title: "Add" }} />
-        <Tabs.Screen name="insights" options={{ title: "Insights" }} />
-      </Tabs>
+        <Stack.Screen
+          name="index"
+          options={{
+            title: "Spend",
+            headerTitleAlign: "left",
+          }}
+        />
+      </Stack>
+
+      <Pressable
+        className="absolute bottom-10 right-8 w-14 h-14 rounded-full bg-primary-900 items-center justify-center shadow-lg"
+        onPress={() => {
+          if (initialized) {
+            setShowModal(true);
+          } else {
+            Alert.alert("Loading", "Database is still initializing. Please try again in a moment.");
+          }
+        }}
+      >
+        <Plus width={24} height={24} fill="#fff" />
+      </Pressable>
 
       <Modal size="md" isOpen={showModal} onClose={() => {
         setShowModal(false);
@@ -273,7 +198,7 @@ function TabLayout() {
         <ModalBackdrop />
         <ModalContent>
           <ModalHeader>
-            <Heading size="lg">Add New Expenditure</Heading>
+            <Heading size="lg">Add Expenditure</Heading>
             <ModalCloseButton onPress={() => {
               setShowModal(false);
               resetForm();
