@@ -1,36 +1,38 @@
-# Welcome to your Expo app 👋
+# Spend
 
-This is an [Expo](https://expo.dev) project created with [`create-gluestack-app`](https://www.npmjs.com/package/create-gluestack).
+**My Personal Expenditure Tracker App**
 
-## Get started
+Spend is a lightweight, privacy-focused personal finance app I designed to provide a clear, simple view of my daily spending habits. Spend is backed by local SQLite storage, and offers fast performance with zero dependency on the cloud – all data stays on the device.
 
-1. Start the app
+## Core Features
 
-   ```bash
-    npm run start
-   ```
+- **1. Add and manage expenses**
+   - Easily input expenses with a category, amount, date, and optional note.
+   - Edit or delete entries at any time.
 
-In the output, you'll find options to open the app in a
+- **2. Daily, Weekly, and Monthly Views**
+   - View a breakdown of spending by day, week, or month.
+   - Quick overview charts or totals to track patterns over time.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- **3. Custom Currency Support**
+   - Choose a preferred currency when setting up the app.
+   - All financial data and summaries adapt to the selected currency symbol.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **4. Categorisation of Expenses**
+   - Predefined categories (e.g., Food, Transport, Entertainment).
+   - Custom category support for more control.
 
-## Learn more
+- **5. Search and Filter**
+   - Search expenses by keyword or filter by date range/category.
 
-To learn more about developing your project with Expo, look at the following resources:
+- **5. Local only storage**
+   - All data is stored locally using SQLite, ensuring privacy and offline availability.
+   - No external sync or cloud access – data is fully under user's control.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-- [Nativewind](https://www.nativewind.dev/): Nativewind is a utility-first library for building native apps with Tailwind CSS.
-- [Gluestack](https://gluestack.io/): Gluestack is a component library for building native apps with Tailwind CSS.
+## Privacy and Simplicity first
 
-## Join the community
+Spend respects data and time. There’s no signup, no ads, and no hidden tracking – just install and start tracking. Perfect for guys who value privacy, speed, and simplicity in personal finance tools.
 
-Join our community of developers creating universal apps.
+## Download
 
-- [gluestack-ui on GitHub](https://github.com/gluestack/gluestack-ui): View our open source ui library and contribute.
-- [gluestack community](https://discord.com/channels/1050761204852858900/1336392784168484914): Chat with gluestack users and ask questions.
+Downdload the Android APK [here]()
