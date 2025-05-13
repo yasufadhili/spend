@@ -33,6 +33,7 @@ const TabNav = () => {
       tabBarStyle: {
         backgroundColor: '#000000',
         elevation: 5,
+        height: 48,
       },
       tabBarIndicatorStyle: {
         backgroundColor: '#ffffff',
@@ -42,7 +43,12 @@ const TabNav = () => {
       tabBarLabelStyle: {
         fontFamily: 'SemiBold',
         fontSize: 14,
+        marginTop: 0,
+        marginBottom: 0,
       },
+      tabBarContentContainerStyle: {
+        alignItems: 'center',
+      }
     }}
   >
     <Tab.Screen 
@@ -199,28 +205,58 @@ const DailyTab = () => {
       ) : (
         <>
           {/* Chart and legend in horizontal layout */}
-          <Box className="flex-row justify-between">
-            <Box>
-              <PolarChart
-                data={chartData}
-                labelKey={"label"}
-                valueKey={"y"}
-                colorKey={"categoryId"}
-                onPress={(slice) => handleSlicePress(slice.datum.categoryId)}
-              />
+          {chartData.length > 0 ? (
+            <Box className="flex-row justify-between items-center mb-4">
+              <Box className="w-[50%] h-[200px] justify-center items-center">
+                <Pie.Chart
+                  data={chartData}
+                  x="x"
+                  y="y"
+                  width={180}
+                  height={180}
+                  padding={0}
+                  innerRadius={30}
+                  labelRadius={60}
+                  colorScale={chartData.map(item => getCategoryColor(item.categoryId))}
+                  style={{
+                    labels: {
+                      fontSize: 10,
+                      fill: 'white'
+                    }
+                  }}
+                  events={[{
+                    target: "data",
+                    eventHandlers: {
+                      onPress: () => {
+                        return [{
+                          target: "data",
+                          mutation: (props) => {
+                            handleSlicePress(props.datum.categoryId);
+                            return null;
+                          }
+                        }];
+                      }
+                    }
+                  }]}
+                />
+              </Box>
+              <Box className="w-[50%] pl-2">
+                {legendData.map((item, index) => (
+                  <Box key={index} className="flex-row items-center mb-2">
+                    <Box 
+                      style={{ backgroundColor: item.symbol.fill }} 
+                      className="w-4 h-4 mr-2 rounded-full" 
+                    />
+                    <Text className="text-xs">{item.name}</Text>
+                  </Box>
+                ))}
+              </Box>
             </Box>
-            <Box>
-              {legendData.map((item, index) => (
-                <Box key={index} className="flex-row items-center mb-1">
-                  <Box 
-                    style={{ backgroundColor: item.symbol.fill }} 
-                    className="w-3 h-3 mr-2 rounded-full" 
-                  />
-                  <Text className="text-xs">{item.name}</Text>
-                </Box>
-              ))}
+          ) : (
+            <Box className="items-center justify-center py-5">
+              <Text className="text-gray-500">No data to display chart</Text>
             </Box>
-          </Box>
+          )}
           
           {/* Category selection indicator */}
           <Box className="bg-primary-400 rounded-lg p-3 mb-3">
@@ -251,7 +287,7 @@ const DailyTab = () => {
   );
 
   return (
-    <Box className="flex-1" style={{ paddingTop: insets.top }}>
+    <Box className="flex-1" style={{ paddingTop: 0 }}>
       <FlatList
         data={filteredExpenditures}
         keyExtractor={(item) => item.id}
@@ -263,6 +299,8 @@ const DailyTab = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
+            colors={['#0000ff']}
+            tintColor={'#0000ff'}
           />
         }
       />

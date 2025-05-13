@@ -382,6 +382,8 @@ export default function TabLayout() {
                   type="text"
                   value={note}
                   onChangeText={(text) => setNote(text)}
+                  textAlignVertical="top"
+                  style={{ height: 100, textAlign: 'left' }}
                 />
               </Textarea>
             </FormControl>
